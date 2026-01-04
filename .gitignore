@@ -1,7 +1,6 @@
 __pycache__/
 temp/
 *.zip
-*.png
 *.svg
 .env
 venv/
