@@ -9,141 +9,76 @@
     <style>
         /* --- BASE VARIABLES --- */
         :root {
-            --bg-color: #f8f9fa;
-            --sidebar-bg: #ffffff;
-            --text-color: #2c3e50;
-            --border-color: #ddd;
-            --input-bg: #ffffff;
-            --input-border: #ccc;
-            --highlight: #3498db;
-            --success: #27ae60;
-            --message-bg: #e8f6f3;
-            --message-border: #1abc9c;
-            --hover-bg: #f1f1f1;
+            --bg-color: #f8f9fa; --sidebar-bg: #ffffff; --text-color: #2c3e50;
+            --border-color: #ddd; --input-bg: #ffffff; --input-border: #ccc;
+            --highlight: #3498db; --success: #27ae60; --message-bg: #e8f6f3;
+            --message-border: #1abc9c; --hover-bg: #f1f1f1;
         }
 
         /* --- DARK MODE --- */
         @media (prefers-color-scheme: dark) {
             :root {
-                --bg-color: #121212;
-                --sidebar-bg: #1e1e1e;
-                --text-color: #ecf0f1;
-                --border-color: #333;
-                --input-bg: #2d2d2d;
-                --input-border: #444;
-                --highlight: #5dade2;
-                --success: #2ecc71;
-                --message-bg: #2c3e50;
-                --message-border: #16a085;
-                --hover-bg: #333;
+                --bg-color: #121212; --sidebar-bg: #1e1e1e; --text-color: #ecf0f1;
+                --border-color: #333; --input-bg: #2d2d2d; --input-border: #444;
+                --highlight: #5dade2; --success: #2ecc71; --message-bg: #2c3e50;
+                --message-border: #16a085; --hover-bg: #333;
             }
             ::-webkit-scrollbar { width: 8px; }
             ::-webkit-scrollbar-track { background: #1e1e1e; }
             ::-webkit-scrollbar-thumb { background: #444; border-radius: 4px; }
-            ::-webkit-scrollbar-thumb:hover { background: #555; }
         }
 
-        body { 
-            font-family: 'Segoe UI', sans-serif; 
-            margin: 0; display: flex; height: 100vh; overflow: hidden; 
-            background-color: var(--bg-color); color: var(--text-color);
-        }
+        body { font-family: 'Segoe UI', sans-serif; margin: 0; display: flex; height: 100vh; overflow: hidden; background-color: var(--bg-color); color: var(--text-color); }
         
-        /* --- SIDEBAR --- */
-        #sidebar { 
-            width: 340px; 
-            background: var(--sidebar-bg); 
-            border-right: 1px solid var(--border-color); 
-            display: flex; flex-direction: column; 
-            box-shadow: 2px 0 5px rgba(0,0,0,0.2); 
-            z-index: 1000; height: 100vh;
-            transition: background 0.3s, color 0.3s;
-        }
+        #sidebar { width: 340px; background: var(--sidebar-bg); border-right: 1px solid var(--border-color); display: flex; flex-direction: column; box-shadow: 2px 0 5px rgba(0,0,0,0.2); z-index: 1000; height: 100vh; }
 
-        /* 1. FIXED HEADER (Clickable Logo) */
+        /* FIXED HEADER */
         .logo-container { 
-            flex-shrink: 0; 
-            padding: 20px;
-            display: flex; justify-content: center; align-items: center;
-            background: transparent; 
-            border-bottom: 2px solid var(--border-color); 
-            z-index: 1001;
-            
-            /* NEW: Clickable Styles */
-            cursor: pointer;
-            transition: background 0.2s;
+            flex-shrink: 0; padding: 20px; display: flex; justify-content: center; align-items: center;
+            background: transparent; border-bottom: 2px solid var(--border-color); z-index: 1001;
+            cursor: pointer; transition: background 0.2s;
         }
-        
-        .logo-container:hover {
-            background-color: var(--hover-bg); /* subtle feedback on hover */
-        }
-        
-        .logo-container img { 
-            max-width: 150px; 
-            height: auto; 
-            display: block; 
-            mix-blend-mode: multiply; /* Hides white background pixels */
-        }
+        .logo-container:hover { background-color: var(--hover-bg); }
+        .logo-container img { max-width: 150px; height: auto; display: block; mix-blend-mode: multiply; }
 
-        /* 2. SCROLLABLE CONTROLS */
-        .scrollable-content {
-            flex-grow: 1; overflow-y: auto; padding: 20px;
-            display: flex; flex-direction: column; gap: 15px;
-        }
+        .scrollable-content { flex-grow: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 15px; }
 
         h3 { margin: 5px 0 5px 0; font-size: 12px; color: var(--text-color); opacity: 0.7; text-transform: uppercase; letter-spacing: 1px; font-weight: bold; border-bottom: 1px solid var(--border-color); padding-bottom: 4px;}
         
         .search-toggles { display: flex; gap: 15px; margin-bottom: 5px; }
         .search-toggles label { font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 5px; }
-        
         .input-group { display: flex; flex-direction: column; gap: 8px; position: relative; }
-        input[type="text"], input[type="number"], select { 
-            padding: 10px; border: 1px solid var(--input-border); 
-            background: var(--input-bg); color: var(--text-color);
-            border-radius: 4px; font-size: 14px; width: 100%; box-sizing: border-box; 
-        }
+        input[type="text"], input[type="number"], select { padding: 10px; border: 1px solid var(--input-border); background: var(--input-bg); color: var(--text-color); border-radius: 4px; font-size: 14px; width: 100%; box-sizing: border-box; }
         
-        #suggestions { 
-            position: absolute; top: 100%; left: 0; right: 0; 
-            background: var(--sidebar-bg); border: 1px solid var(--border-color); 
-            border-top: none; border-radius: 0 0 4px 4px; 
-            z-index: 2000; max-height: 200px; overflow-y: auto; display: none; 
-            box-shadow: 0 4px 6px rgba(0,0,0,0.2); 
-        }
+        #suggestions { position: absolute; top: 100%; left: 0; right: 0; background: var(--sidebar-bg); border: 1px solid var(--border-color); border-top: none; border-radius: 0 0 4px 4px; z-index: 2000; max-height: 200px; overflow-y: auto; display: none; box-shadow: 0 4px 6px rgba(0,0,0,0.2); }
         .suggestion-item { padding: 10px; cursor: pointer; font-size: 13px; border-bottom: 1px solid var(--border-color); }
         .suggestion-item:hover { background-color: var(--hover-bg); }
         
         .coord-row { display: flex; gap: 5px; }
-        .search-btn { background: var(--highlight); color: white; border: none; padding: 10px; border-radius: 4px; cursor: pointer; font-weight: bold; width: 100%; transition: 0.2s;}
-        .search-btn:hover { filter: brightness(1.1); }
+        
+        /* BUTTON STYLES */
+        .action-btn { background: var(--highlight); color: white; border: none; padding: 10px; border-radius: 4px; cursor: pointer; font-weight: bold; width: 100%; transition: 0.2s; font-size: 14px; }
+        .action-btn:hover { filter: brightness(1.1); }
+        
+        .reset-btn { background: #7f8c8d; margin-top: 5px; } /* Grey for reset */
+        .zoom-btn { background: #95a5a6; margin-top: 5px; font-size: 12px; padding: 8px; } 
 
         .layer-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-        .layer-option { 
-            display: flex; align-items: center; gap: 8px; font-size: 13px; cursor: pointer; 
-            background: var(--input-bg); padding: 8px; border-radius: 4px; border: 1px solid var(--border-color);
-        }
+        .layer-option { display: flex; align-items: center; gap: 8px; font-size: 13px; cursor: pointer; background: var(--input-bg); padding: 8px; border-radius: 4px; border: 1px solid var(--border-color); }
         .layer-option:hover { background: var(--hover-bg); }
         input[type="checkbox"] { transform: scale(1.1); cursor: pointer; accent-color: var(--highlight); }
         
         .basemap-box { margin-top: 0px; padding: 10px; background: var(--hover-bg); border-radius: 4px; border: 1px solid var(--border-color); }
 
         button#downloadBtn { padding: 12px; background-color: var(--success); color: white; border: none; font-weight: bold; cursor: pointer; border-radius: 5px; margin-top: 10px; font-size: 16px; transition: background 0.2s; width: 100%; }
-        button#downloadBtn:hover { filter: brightness(1.1); }
         button#downloadBtn.cancel-mode { background-color: #e74c3c !important; }
         
         #map { flex-grow: 1; position: relative; z-index: 1; }
         #message { font-size: 13px; font-weight: bold; color: var(--text-color); min-height: 20px; padding: 10px; background: var(--message-bg); border-radius: 5px; border-left: 5px solid var(--message-border);}
         .hidden { display: none !important; }
 
-        #loaderOverlay {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.7); z-index: 9999; display: none;
-            flex-direction: column; justify-content: center; align-items: center;
-        }
-        .spinner {
-            border: 8px solid #f3f3f3; border-top: 8px solid var(--highlight);
-            border-radius: 50%; width: 60px; height: 60px; animation: spin 1s linear infinite;
-        }
+        #loaderOverlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.7); z-index: 9999; display: none; flex-direction: column; justify-content: center; align-items: center; }
+        .spinner { border: 8px solid #f3f3f3; border-top: 8px solid var(--highlight); border-radius: 50%; width: 60px; height: 60px; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         .loading-text { margin-top: 15px; font-size: 18px; font-weight: bold; color: white; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
 
@@ -154,7 +89,7 @@
             #map { height: 45%; } 
             .logo-container { padding: 10px; }
             .logo-container img { max-width: 80px; }
-            .scrollable-content { padding: 15px; }
+            .scrollable-content { padding: 15px; padding-bottom: 80px; } 
         }
     </style>
 </head>
@@ -162,7 +97,7 @@
 
 <div id="sidebar">
     <div class="logo-container" onclick="window.location.reload()" title="Reload App">
-        <img src="logo.png?v=2" alt="Logo" onerror="this.style.display='none'"> 
+        <img src="logo.png?v=3" alt="Logo" onerror="this.style.display='none'"> 
     </div>
     
     <div class="scrollable-content">
@@ -184,10 +119,14 @@
             </div>
         </div>
 
-        <button class="search-btn" onclick="executeSearch()">Fly to Location</button>
+        <button class="action-btn" onclick="executeSearch()">Fly to Location</button>
+        
+        <button class="action-btn reset-btn" onclick="zoomToFullExtent()" title="Reset view to start">Full Extent</button>
 
         <h3>2. Draw Area</h3>
         <div id="message">Use toolbar (on Map) to draw.</div>
+        
+        <button class="action-btn zoom-btn" onclick="zoomToSelection()" title="Fit map to your drawn shape">Center on Selection</button>
 
         <h3>3. Layers</h3>
         <div class="layer-grid">
@@ -243,15 +182,20 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js"></script>
 
 <script>
-    // --- 1. MAP SETUP & BASEMAPS ---
+    // MAP SETUP
+    // Defined start coords to reuse later
+    const START_LAT = 20.5937;
+    const START_LON = 78.9629;
+    const START_ZOOM = 5;
+
     var osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap' });
     var satellite = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', { attribution: 'Tiles © Esri' });
     var dark = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', { attribution: '© OpenStreetMap & CartoDB' });
 
-    var map = L.map('map', { center: [20.5937, 78.9629], zoom: 5, layers: [osm] });
+    var map = L.map('map', { center: [START_LAT, START_LON], zoom: START_ZOOM, layers: [osm] });
     L.control.layers({ "Standard": osm, "Satellite": satellite, "Dark Mode": dark }).addTo(map);
 
-    // --- 2. DRAWING CONTROLS ---
+    // DRAWING CONTROLS
     var drawnItems = new L.FeatureGroup();
     map.addLayer(drawnItems);
     var drawControl = new L.Control.Draw({
@@ -266,7 +210,7 @@
 
     let currentLocationName = "Custom_Area"; 
 
-    // --- 3. SEARCH & AUTOCOMPLETE ---
+    // SEARCH & AUTOCOMPLETE
     const cityInput = document.getElementById('cityInput');
     const suggestionsBox = document.getElementById('suggestions');
     let debounceTimer;
@@ -330,7 +274,7 @@
         }
     }
 
-    // --- 4. SELECTION TRACKING ---
+    // SELECTION TRACKING
     var selData = null;
     var selType = null;
 
@@ -356,12 +300,26 @@
 
     map.on(L.Draw.Event.DELETED, function () { selData = null; document.getElementById('message').innerText = "Use toolbar to select area"; });
 
+    // NEW FUNCTION: ZOOM TO SELECTION
+    function zoomToSelection() {
+        if (drawnItems.getLayers().length > 0) {
+            map.fitBounds(drawnItems.getBounds());
+        } else {
+            alert("Please draw a shape first!");
+        }
+    }
+
+    // NEW FUNCTION: ZOOM TO FULL EXTENT
+    function zoomToFullExtent() {
+        map.setView([START_LAT, START_LON], START_ZOOM);
+    }
+
     function getFormattedDate() {
         const d = new Date();
         return `${String(d.getDate()).padStart(2,'0')}${String(d.getMonth()+1).padStart(2,'0')}${d.getFullYear()}`;
     }
 
-    // --- 5. DOWNLOAD & ABORT LOGIC ---
+    // DOWNLOAD & ABORT LOGIC
     let abortController = null;
 
     async function downloadData() {
@@ -424,7 +382,7 @@
             const ext = (fmt === 'shp' || ['geojson', 'gpkg'].includes(fmt)) ? 'zip' : fmt;
             link.download = `${currentLocationName}_${getFormattedDate()}.${ext}`;
             link.click();
-            msg.innerText = "🎉 Download Complete!";
+            msg.innerText = "Download Complete!";
 
         } catch (e) {
             if (e.name === 'AbortError') msg.innerText = "🚫 Download Cancelled.";
