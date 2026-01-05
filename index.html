@@ -7,137 +7,235 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css" />
     <style>
-        body { font-family: 'Segoe UI', sans-serif; margin: 0; display: flex; height: 100vh; }
+        /* --- BASE VARIABLES --- */
+        :root {
+            --bg-color: #f8f9fa;
+            --sidebar-bg: #ffffff;
+            --text-color: #2c3e50;
+            --border-color: #ddd;
+            --input-bg: #ffffff;
+            --input-border: #ccc;
+            --highlight: #3498db;
+            --success: #27ae60;
+            --message-bg: #e8f6f3;
+            --message-border: #1abc9c;
+            --hover-bg: #f1f1f1;
+        }
+
+        /* --- DARK MODE --- */
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg-color: #121212;
+                --sidebar-bg: #1e1e1e;
+                --text-color: #ecf0f1;
+                --border-color: #333;
+                --input-bg: #2d2d2d;
+                --input-border: #444;
+                --highlight: #5dade2;
+                --success: #2ecc71;
+                --message-bg: #2c3e50;
+                --message-border: #16a085;
+                --hover-bg: #333;
+            }
+            ::-webkit-scrollbar { width: 8px; }
+            ::-webkit-scrollbar-track { background: #1e1e1e; }
+            ::-webkit-scrollbar-thumb { background: #444; border-radius: 4px; }
+            ::-webkit-scrollbar-thumb:hover { background: #555; }
+        }
+
+        body { 
+            font-family: 'Segoe UI', sans-serif; 
+            margin: 0; display: flex; height: 100vh; overflow: hidden; 
+            background-color: var(--bg-color); color: var(--text-color);
+        }
         
         /* --- SIDEBAR --- */
         #sidebar { 
-            width: 320px; background: #f8f9fa; padding: 20px; 
-            border-right: 1px solid #ddd; display: flex; flex-direction: column; gap: 15px;
-            box-shadow: 2px 0 5px rgba(0,0,0,0.1); z-index: 1000; overflow-y: auto;
+            width: 340px; 
+            background: var(--sidebar-bg); 
+            border-right: 1px solid var(--border-color); 
+            display: flex; flex-direction: column; 
+            box-shadow: 2px 0 5px rgba(0,0,0,0.2); 
+            z-index: 1000; height: 100vh;
+            transition: background 0.3s, color 0.3s;
         }
 
-        /* NEW: LOGO STYLING */
-        .logo-container { text-align: center; margin-bottom: 10px; border-bottom: 2px solid #ddd; padding-bottom: 15px; }
-        .logo-container img { max-width: 150px; height: auto; display: block; margin: 0 auto; }
-        .logo-title { font-size: 18px; font-weight: bold; color: #2c3e50; margin-top: 10px; }
-
-        /* HEADERS */
-        h3 { margin: 10px 0 5px 0; font-size: 12px; color: #7f8c8d; text-transform: uppercase; letter-spacing: 1px; font-weight: bold; }
+        /* 1. FIXED HEADER (Clickable Logo) */
+        .logo-container { 
+            flex-shrink: 0; 
+            padding: 20px;
+            display: flex; justify-content: center; align-items: center;
+            background: transparent; 
+            border-bottom: 2px solid var(--border-color); 
+            z-index: 1001;
+            
+            /* NEW: Clickable Styles */
+            cursor: pointer;
+            transition: background 0.2s;
+        }
         
-        /* SEARCH & INPUTS */
+        .logo-container:hover {
+            background-color: var(--hover-bg); /* subtle feedback on hover */
+        }
+        
+        .logo-container img { 
+            max-width: 150px; 
+            height: auto; 
+            display: block; 
+            mix-blend-mode: multiply; /* Hides white background pixels */
+        }
+
+        /* 2. SCROLLABLE CONTROLS */
+        .scrollable-content {
+            flex-grow: 1; overflow-y: auto; padding: 20px;
+            display: flex; flex-direction: column; gap: 15px;
+        }
+
+        h3 { margin: 5px 0 5px 0; font-size: 12px; color: var(--text-color); opacity: 0.7; text-transform: uppercase; letter-spacing: 1px; font-weight: bold; border-bottom: 1px solid var(--border-color); padding-bottom: 4px;}
+        
         .search-toggles { display: flex; gap: 15px; margin-bottom: 5px; }
         .search-toggles label { font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 5px; }
-        .input-group { display: flex; flex-direction: column; gap: 8px; position: relative; }
-        input[type="text"], input[type="number"] { padding: 10px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; width: 100%; box-sizing: border-box; }
         
-        /* SEARCH SUGGESTIONS */
-        #suggestions { position: absolute; top: 100%; left: 0; right: 0; background: white; border: 1px solid #ccc; border-top: none; border-radius: 0 0 4px 4px; z-index: 2000; max-height: 200px; overflow-y: auto; display: none; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        .suggestion-item { padding: 10px; cursor: pointer; font-size: 13px; border-bottom: 1px solid #eee; }
-        .suggestion-item:hover { background-color: #f1f1f1; }
+        .input-group { display: flex; flex-direction: column; gap: 8px; position: relative; }
+        input[type="text"], input[type="number"], select { 
+            padding: 10px; border: 1px solid var(--input-border); 
+            background: var(--input-bg); color: var(--text-color);
+            border-radius: 4px; font-size: 14px; width: 100%; box-sizing: border-box; 
+        }
+        
+        #suggestions { 
+            position: absolute; top: 100%; left: 0; right: 0; 
+            background: var(--sidebar-bg); border: 1px solid var(--border-color); 
+            border-top: none; border-radius: 0 0 4px 4px; 
+            z-index: 2000; max-height: 200px; overflow-y: auto; display: none; 
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2); 
+        }
+        .suggestion-item { padding: 10px; cursor: pointer; font-size: 13px; border-bottom: 1px solid var(--border-color); }
+        .suggestion-item:hover { background-color: var(--hover-bg); }
         
         .coord-row { display: flex; gap: 5px; }
-        .search-btn { background: #3498db; color: white; border: none; padding: 10px; border-radius: 4px; cursor: pointer; font-weight: bold; width: 100%; }
-        .search-btn:hover { background: #2980b9; }
+        .search-btn { background: var(--highlight); color: white; border: none; padding: 10px; border-radius: 4px; cursor: pointer; font-weight: bold; width: 100%; transition: 0.2s;}
+        .search-btn:hover { filter: brightness(1.1); }
 
-        /* LAYERS GRID */
         .layer-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-        .layer-option { display: flex; align-items: center; gap: 8px; font-size: 14px; cursor: pointer; background: white; padding: 8px; border-radius: 4px; border: 1px solid #eee;}
-        .layer-option:hover { background: #eef; }
-        input[type="checkbox"] { transform: scale(1.1); cursor: pointer; }
+        .layer-option { 
+            display: flex; align-items: center; gap: 8px; font-size: 13px; cursor: pointer; 
+            background: var(--input-bg); padding: 8px; border-radius: 4px; border: 1px solid var(--border-color);
+        }
+        .layer-option:hover { background: var(--hover-bg); }
+        input[type="checkbox"] { transform: scale(1.1); cursor: pointer; accent-color: var(--highlight); }
         
-        select { padding: 10px; border-radius: 5px; border: 1px solid #ccc; width: 100%; background: white; }
-        
-        button#downloadBtn { padding: 12px; background-color: #27ae60; color: white; border: none; font-weight: bold; cursor: pointer; border-radius: 5px; margin-top: 10px; font-size: 16px; transition: background 0.2s; }
-        button#downloadBtn:hover { background-color: #219150; }
+        .basemap-box { margin-top: 0px; padding: 10px; background: var(--hover-bg); border-radius: 4px; border: 1px solid var(--border-color); }
+
+        button#downloadBtn { padding: 12px; background-color: var(--success); color: white; border: none; font-weight: bold; cursor: pointer; border-radius: 5px; margin-top: 10px; font-size: 16px; transition: background 0.2s; width: 100%; }
+        button#downloadBtn:hover { filter: brightness(1.1); }
         button#downloadBtn.cancel-mode { background-color: #e74c3c !important; }
-        button#downloadBtn.cancel-mode:hover { background-color: #c0392b !important; }
         
-        #map { flex-grow: 1; position: relative; }
-        #message { font-size: 13px; font-weight: bold; color: #555; min-height: 20px; padding: 10px; background: #e8f6f3; border-radius: 5px; border-left: 5px solid #1abc9c;}
+        #map { flex-grow: 1; position: relative; z-index: 1; }
+        #message { font-size: 13px; font-weight: bold; color: var(--text-color); min-height: 20px; padding: 10px; background: var(--message-bg); border-radius: 5px; border-left: 5px solid var(--message-border);}
         .hidden { display: none !important; }
 
-        /* --- NEW: LOADING SPINNER OVERLAY --- */
         #loaderOverlay {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(255, 255, 255, 0.8);
-            z-index: 9999;
-            display: none; /* Hidden by default */
+            background: rgba(0, 0, 0, 0.7); z-index: 9999; display: none;
             flex-direction: column; justify-content: center; align-items: center;
         }
         .spinner {
-            border: 8px solid #f3f3f3;
-            border-top: 8px solid #3498db;
-            border-radius: 50%;
-            width: 60px; height: 60px;
-            animation: spin 1s linear infinite;
+            border: 8px solid #f3f3f3; border-top: 8px solid var(--highlight);
+            border-radius: 50%; width: 60px; height: 60px; animation: spin 1s linear infinite;
         }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        .loading-text { margin-top: 15px; font-size: 18px; font-weight: bold; color: #2c3e50; }
+        .loading-text { margin-top: 15px; font-size: 18px; font-weight: bold; color: white; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
+
+        /* --- MOBILE --- */
+        @media (max-width: 768px) {
+            body { flex-direction: column-reverse; } 
+            #sidebar { width: 100%; height: 55%; border-right: none; border-top: 2px solid var(--highlight); }
+            #map { height: 45%; } 
+            .logo-container { padding: 10px; }
+            .logo-container img { max-width: 80px; }
+            .scrollable-content { padding: 15px; }
+        }
     </style>
 </head>
 <body>
 
 <div id="sidebar">
-    <div class="logo-container">
-        <img src="logo.png" alt="MapForge" onerror="this.style.display='none'">
-        <div class="logo-title">MapForge</div>
+    <div class="logo-container" onclick="window.location.reload()" title="Reload App">
+        <img src="logo.png?v=2" alt="Logo" onerror="this.style.display='none'"> 
     </div>
     
-    <h3>1. Navigate Map</h3>
-    <div class="search-toggles">
-        <label><input type="radio" name="searchMode" value="place" checked onchange="toggleSearchMode()"> Name</label>
-        <label><input type="radio" name="searchMode" value="coords" onchange="toggleSearchMode()"> Coords</label>
-    </div>
-
-    <div id="placeSearchDiv" class="input-group">
-        <input type="text" id="cityInput" placeholder="Start typing... (e.g. London)" autocomplete="off">
-        <div id="suggestions"></div>
-    </div>
-
-    <div id="coordSearchDiv" class="input-group hidden">
-        <div class="coord-row">
-            <input type="number" id="latInput" placeholder="Lat" step="any">
-            <input type="number" id="lonInput" placeholder="Lon" step="any">
+    <div class="scrollable-content">
+        <h3>1. Navigate</h3>
+        <div class="search-toggles">
+            <label><input type="radio" name="searchMode" value="place" checked onchange="toggleSearchMode()"> Name</label>
+            <label><input type="radio" name="searchMode" value="coords" onchange="toggleSearchMode()"> Coords</label>
         </div>
+
+        <div id="placeSearchDiv" class="input-group">
+            <input type="text" id="cityInput" placeholder="Enter City (e.g. Tokyo)..." autocomplete="off">
+            <div id="suggestions"></div>
+        </div>
+
+        <div id="coordSearchDiv" class="input-group hidden">
+            <div class="coord-row">
+                <input type="number" id="latInput" placeholder="Lat" step="any">
+                <input type="number" id="lonInput" placeholder="Lon" step="any">
+            </div>
+        </div>
+
+        <button class="search-btn" onclick="executeSearch()">Fly to Location</button>
+
+        <h3>2. Draw Area</h3>
+        <div id="message">Use toolbar (on Map) to draw.</div>
+
+        <h3>3. Layers</h3>
+        <div class="layer-grid">
+            <label class="layer-option"><input type="checkbox" value="buildings" checked> Buildings</label>
+            <label class="layer-option"><input type="checkbox" value="streets" checked> Streets</label>
+            <label class="layer-option"><input type="checkbox" value="water"> Water</label>
+            <label class="layer-option"><input type="checkbox" value="parks"> Parks</label>
+            <label class="layer-option"><input type="checkbox" value="schools"> Schools</label>
+            <label class="layer-option"><input type="checkbox" value="medical"> Medical</label>
+            <label class="layer-option"><input type="checkbox" value="railways"> Railways</label>
+            <label class="layer-option"><input type="checkbox" value="power"> Power</label>
+        </div>
+
+        <div class="basemap-box">
+            <label style="font-weight: bold; font-size: 13px; display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                <input type="checkbox" id="basemapCheck" value="true"> 
+                Include Background Map 🌍
+            </label>
+            <select id="basemapStyle" style="margin-top: 8px; font-size: 12px; padding: 5px; width: 100%;">
+                <option value="osm">Standard (Street)</option>
+                <option value="satellite">Satellite (Real Image)</option>
+                <option value="dark">Dark Mode (Clean)</option>
+            </select>
+            <div style="font-size: 11px; opacity: 0.7; margin-top: 4px;">*Requires PNG, SVG, or PDF format</div>
+        </div>
+
+        <h3>4. Format & Export</h3>
+        <select id="format">
+            <optgroup label="Graphic Design (Images)">
+                <option value="svg">SVG (Illustrator)</option>
+                <option value="png">PNG (Photoshop)</option>
+                <option value="pdf">PDF (Document)</option>
+            </optgroup>
+            <optgroup label="GIS Data (Vectors)">
+                <option value="geojson">GeoJSON</option>
+                <option value="shp">Shapefile (ESRI)</option>
+                <option value="gpkg">GeoPackage</option>
+            </optgroup>
+        </select>
+
+        <button id="downloadBtn" onclick="downloadData()">Download Selected</button>
     </div>
-
-    <button class="search-btn" onclick="executeSearch()">Go to Location</button>
-
-    <h3>2. Select Area</h3>
-    <div id="message">Use toolbar to draw area.</div>
-
-    <h3>3. Select Layers</h3>
-    <div class="layer-grid">
-        <label class="layer-option"><input type="checkbox" value="buildings" checked> Buildings</label>
-        <label class="layer-option"><input type="checkbox" value="streets" checked> Streets</label>
-        <label class="layer-option"><input type="checkbox" value="water"> Water</label>
-        <label class="layer-option"><input type="checkbox" value="parks"> Parks</label>
-        <label class="layer-option"><input type="checkbox" value="schools"> Schools</label>
-        <label class="layer-option"><input type="checkbox" value="medical"> Medical</label>
-        <label class="layer-option"><input type="checkbox" value="railways"> Railways</label>
-        <label class="layer-option"><input type="checkbox" value="power"> Power</label>
-    </div>
-
-    <h3>4. Export Format</h3>
-    <select id="format">
-        <optgroup label="Graphic Design">
-            <option value="svg">SVG (Illustrator)</option>
-            <option value="png">PNG (Photoshop)</option>
-        </optgroup>
-        <optgroup label="GIS Data">
-            <option value="geojson">GeoJSON</option>
-            <option value="shp">Shapefile (ESRI)</option>
-            <option value="gpkg">GeoPackage</option>
-        </optgroup>
-    </select>
-
-    <button id="downloadBtn" onclick="downloadData()">Download Selected</button>
 </div>
 
 <div id="map">
     <div id="loaderOverlay">
         <div class="spinner"></div>
-        <div class="loading-text">Generating Files...</div>
+        <div class="loading-text">Generating Data...</div>
     </div>
 </div>
 
@@ -145,12 +243,17 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js"></script>
 
 <script>
-    var map = L.map('map').setView([20.5937, 78.9629], 5);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap' }).addTo(map);
+    // --- 1. MAP SETUP & BASEMAPS ---
+    var osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap' });
+    var satellite = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', { attribution: 'Tiles © Esri' });
+    var dark = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', { attribution: '© OpenStreetMap & CartoDB' });
 
+    var map = L.map('map', { center: [20.5937, 78.9629], zoom: 5, layers: [osm] });
+    L.control.layers({ "Standard": osm, "Satellite": satellite, "Dark Mode": dark }).addTo(map);
+
+    // --- 2. DRAWING CONTROLS ---
     var drawnItems = new L.FeatureGroup();
     map.addLayer(drawnItems);
-    
     var drawControl = new L.Control.Draw({
         draw: {
             polygon: { allowIntersection: false, showArea: true, shapeOptions: { color: '#9b59b6' } },
@@ -163,7 +266,7 @@
 
     let currentLocationName = "Custom_Area"; 
 
-    // --- SEARCH LOGIC ---
+    // --- 3. SEARCH & AUTOCOMPLETE ---
     const cityInput = document.getElementById('cityInput');
     const suggestionsBox = document.getElementById('suggestions');
     let debounceTimer;
@@ -196,6 +299,7 @@
             suggestionsBox.style.display = 'block';
         } catch (e) {}
     }
+
     document.addEventListener('click', function(e) {
         if (e.target !== cityInput && e.target !== suggestionsBox) suggestionsBox.style.display = 'none';
     });
@@ -226,7 +330,7 @@
         }
     }
 
-    // --- SELECTION LOGIC ---
+    // --- 4. SELECTION TRACKING ---
     var selData = null;
     var selType = null;
 
@@ -254,49 +358,53 @@
 
     function getFormattedDate() {
         const d = new Date();
-        const day = String(d.getDate()).padStart(2, '0');
-        const month = String(d.getMonth() + 1).padStart(2, '0');
-        const year = d.getFullYear();
-        return `${day}${month}${year}`;
+        return `${String(d.getDate()).padStart(2,'0')}${String(d.getMonth()+1).padStart(2,'0')}${d.getFullYear()}`;
     }
 
-    // --- DOWNLOAD & LOADER LOGIC ---
+    // --- 5. DOWNLOAD & ABORT LOGIC ---
     let abortController = null;
 
     async function downloadData() {
         const btn = document.getElementById('downloadBtn');
         const msg = document.getElementById('message');
-        const loader = document.getElementById('loaderOverlay'); // Get the spinner
+        const loader = document.getElementById('loaderOverlay');
+        const basemap = document.getElementById('basemapCheck').checked;
+        const basemapStyle = document.getElementById('basemapStyle').value; 
+        const fmt = document.getElementById('format').value;
+        const checkboxes = document.querySelectorAll('.layer-grid input:checked');
 
         if (abortController) {
             abortController.abort();
             abortController = null;
-            
-            // RESET UI ON CANCEL
             btn.innerText = "Download Selected";
             btn.classList.remove('cancel-mode');
-            loader.style.display = 'none'; // Hide spinner
+            loader.style.display = 'none';
             msg.innerText = "🚫 Download Cancelled.";
             return;
         }
 
-        if (!selData) { alert("Draw an area first!"); return; }
-        const checkboxes = document.querySelectorAll('.layer-grid input:checked');
-        if (checkboxes.length === 0) { alert("Select a layer!"); return; }
+        if (!selData) { alert("Please draw an area on the map first!"); return; }
+        if (checkboxes.length === 0 && !basemap) { alert("Select at least one Layer OR the Background Map."); return; }
+        if (basemap && !['png','svg','pdf'].includes(fmt)) { alert("Background Map only works with PNG, SVG, or PDF formats."); return; }
+
         const layers = Array.from(checkboxes).map(cb => cb.value).join(',');
-        const fmt = document.getElementById('format').value;
 
         abortController = new AbortController();
         const signal = abortController.signal;
-
-        // START LOADING STATE
         btn.innerText = "Cancel Processing ❌";
         btn.classList.add('cancel-mode');
-        msg.innerText = "Processing in background...";
-        loader.style.display = 'flex'; // Show spinner
+        msg.innerText = "Processing... (This may take a moment)";
+        loader.style.display = 'flex';
 
         try {
-            let params = new URLSearchParams({ layers: layers, type: selType, fmt: fmt });
+            let params = new URLSearchParams({ 
+                layers: layers, 
+                type: selType, 
+                fmt: fmt, 
+                basemap: basemap,
+                basemap_style: basemapStyle 
+            });
+            
             if (selType === 'bbox') {
                 params.append('north', selData.north); params.append('south', selData.south);
                 params.append('east', selData.east); params.append('west', selData.west);
@@ -314,8 +422,7 @@
             const link = document.createElement('a');
             link.href = window.URL.createObjectURL(blob);
             const ext = (fmt === 'shp' || ['geojson', 'gpkg'].includes(fmt)) ? 'zip' : fmt;
-            const dateStr = getFormattedDate();
-            link.download = `${currentLocationName}_${dateStr}.${ext}`;
+            link.download = `${currentLocationName}_${getFormattedDate()}.${ext}`;
             link.click();
             msg.innerText = "🎉 Download Complete!";
 
@@ -323,11 +430,10 @@
             if (e.name === 'AbortError') msg.innerText = "🚫 Download Cancelled.";
             else msg.innerText = "❌ " + e.message;
         } finally {
-            // ALWAYS RESET UI (Hide spinner, reset button)
             abortController = null;
             btn.innerText = "Download Selected";
             btn.classList.remove('cancel-mode');
-            loader.style.display = 'none'; 
+            loader.style.display = 'none';
         }
     }
 </script>
