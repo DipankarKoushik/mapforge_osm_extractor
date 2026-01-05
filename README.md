@@ -16,9 +16,17 @@ A professional full-stack web application to extract, visualize, and export high
 
 
 
+
+
+
+
 🚀 Try here
 
 [Click here to view the Live App](https://osmextractor-mapforge.onrender.com/)
+
+
+
+
 
 
 
@@ -39,17 +47,15 @@ Advanced Mapping Tools
 
 Select your area of interest using:
 
-&nbsp;   🟦 Rectangle (Bounding Box)\*\*
+🟦 Rectangle (Bounding Box)
 
-&nbsp;   ⚪ Circle (Radius Select)
+⚪ Circle (Radius Select)
 
-&nbsp;   ✍️ Freehand Polygon
-
-
-
-Data Export \& Visualization
+✍️ Freehand Polygon
 
 
+
+Data Export \\\& Visualization
 
 * Download specific urban layers: Buildings, Streets, Water, Parks, Schools, Medical, Railways, Power Lines.
 * GIS Vector Support: Export data as Shapefile (.shp), GeoPackage (.gpkg), or GeoJSON for professional GIS software (QGIS/ArcGIS).
@@ -63,11 +69,10 @@ Smart Clipping (Advanced)
 
 
 
-
-
 Tech Stack:
 
-* Backend
+Backend
+
 * Python 3.10+
 * FastAPI: High-performance API framework.
 * OSMnx: For retrieving and constructing street networks.
@@ -85,15 +90,17 @@ Frontend
 
 
 
-
-
 Local Installation Guide
 
 1\. Clone the Repository
 
-git clone https://github.com/YOUR\_USERNAME/osm-urban-planner.git
 
-cd osm-urban-planner
+
+git clone https://github.com/DipankarKoushik/mapforge\_osm\_extractor.git
+
+
+
+cd mapforge\_osm\_extractor
 
 
 
@@ -117,17 +124,23 @@ source venv/bin/activate
 
 3\. Install Dependencies
 
+
+
 pip install -r requirements.txt
 
 
 
 4\. Run the Server
 
+
+
 uvicorn main:app --reload
 
 
 
 5\. Access the App
+
+
 
 Open your browser and go to: http://127.0.0.1:8000
 
