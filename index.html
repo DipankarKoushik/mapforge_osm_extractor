@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css" />
     <style>
-        /* --- BASE VARIABLES --- */
+        /* BASE VARIABLES */
         :root {
             --bg-color: #f8f9fa; --sidebar-bg: #ffffff; --text-color: #2c3e50;
             --border-color: #ddd; --input-bg: #ffffff; --input-border: #ccc;
@@ -16,7 +16,7 @@
             --message-border: #1abc9c; --hover-bg: #f1f1f1;
         }
 
-        /* --- DARK MODE --- */
+        /* DARK MODE */
         @media (prefers-color-scheme: dark) {
             :root {
                 --bg-color: #121212; --sidebar-bg: #1e1e1e; --text-color: #ecf0f1;
@@ -41,7 +41,7 @@
         /* Default Logo Style */
         .logo-container img { 
             max-width: 160px; height: auto; display: block; 
-            /* We remove 'multiply' here too just to be safe, assuming you have a PNG */
+            /* Removed 'multiply' here just to be safe */
             mix-blend-mode: normal; 
         }
 
@@ -77,7 +77,7 @@
         input[type="checkbox"] { transform: scale(1.1); cursor: pointer; accent-color: var(--highlight); }
         .basemap-box { margin-top: 0px; padding: 10px; background: var(--hover-bg); border-radius: 4px; border: 1px solid var(--border-color); }
 
-        /* Main Download Button */
+        /* Download Button */
         button#downloadBtn { padding: 12px; background-color: var(--success); color: white; border: none; font-weight: bold; cursor: pointer; border-radius: 5px; margin-top: 10px; font-size: 16px; transition: background 0.2s; width: 100%; }
         button#downloadBtn.cancel-mode { background-color: #e74c3c !important; }
         
@@ -85,7 +85,7 @@
         #message { font-size: 13px; font-weight: bold; color: var(--text-color); min-height: 20px; padding: 10px; background: var(--message-bg); border-radius: 5px; border-left: 5px solid var(--message-border);}
         .hidden { display: none !important; }
 
-        /* GLOBAL LOADER (Fixed to Body) */
+        /* GLOBAL LOADER */
         #globalLoader {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             background: rgba(0, 0, 0, 0.85); z-index: 99999; display: none;

@@ -18,7 +18,7 @@ os.makedirs("temp", exist_ok=True)
 # Use Agg backend (prevents server crashes on render)
 plt.switch_backend('Agg')
 
-# --- CONFIGURATION ---
+# CONFIGURATION
 LAYER_CONFIG = {
     "water": {"tags": {"natural": "water", "waterway": ["river", "canal", "stream"]}, "color": "#aed9e0", "geom": ["Polygon", "MultiPolygon"], "order": 1},
     "parks": {"tags": {"leisure": "park", "landuse": ["grass", "forest", "recreation_ground"]}, "color": "#c7e9c0", "geom": ["Polygon", "MultiPolygon"], "order": 2},
@@ -30,7 +30,7 @@ LAYER_CONFIG = {
     "power": {"tags": {"power": "line"}, "color": "#f1c40f", "geom": ["LineString", "MultiLineString"], "order": 7}
 }
 
-# --- HELPERS ---
+# HELPERS
 def clean_gdf(gdf, layer_name):
     if gdf.empty: return gdf
     gdf = gdf.fillna('')
@@ -55,7 +55,7 @@ def fetch_data(layer, bbox=None, center=None, polygon=None):
         else: gdf = ox.features_from_point((center[0], center[1]), tags=tags, dist=center[2])
     return clean_gdf(gdf, layer)
 
-# --- ROUTES ---
+# ROUTES
 
 @app.get("/")
 async def read_root():
@@ -110,7 +110,7 @@ async def download_multilayers(
             raise HTTPException(404, detail="No data found for this area. Try selecting a different layer or location.")
 
         # 3. Export Logic
-        # IMAGES (PNG, SVG, PDF)
+        # (PNG, SVG, PDF)
         if fmt in ['svg', 'png', 'pdf']:
             filename = f"map_{unique_id}.{fmt}"
             filepath = os.path.join("temp", filename)
@@ -174,7 +174,7 @@ async def download_multilayers(
 
     except Exception as e:
         print(f"SERVER ERROR: {e}")
-        # IMPORTANT: This allows the frontend to detect the error properly
+        # This allows the frontend to detect the error properly
         raise HTTPException(status_code=500, detail=str(e))
 
 # Static File Handler (MUST BE LAST)
