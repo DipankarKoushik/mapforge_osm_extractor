@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MapForge</title>
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css" />
     <style>
@@ -11,7 +12,7 @@
         :root {
             --bg-color: #f8f9fa; --sidebar-bg: #ffffff; --text-color: #2c3e50;
             --border-color: #ddd; --input-bg: #ffffff; --input-border: #ccc;
-            --highlight: #3498db; --success: #27ae60; --message-bg: #e8f6f3;
+            --highlight: #2c3e50; --success: #27ae60; --message-bg: #e8f6f3;
             --message-border: #1abc9c; --hover-bg: #f1f1f1;
         }
 
@@ -20,56 +21,63 @@
             :root {
                 --bg-color: #121212; --sidebar-bg: #1e1e1e; --text-color: #ecf0f1;
                 --border-color: #333; --input-bg: #2d2d2d; --input-border: #444;
-                --highlight: #5dade2; --success: #2ecc71; --message-bg: #2c3e50;
+                --highlight: #34495e; --success: #2ecc71; --message-bg: #2c3e50;
                 --message-border: #16a085; --hover-bg: #333;
             }
-            ::-webkit-scrollbar { width: 8px; }
-            ::-webkit-scrollbar-track { background: #1e1e1e; }
-            ::-webkit-scrollbar-thumb { background: #444; border-radius: 4px; }
+
+            /* FIX: Force logo to show ORIGINAL colors */
+            .logo-container img {
+                filter: none !important;
+                mix-blend-mode: normal !important;
+            }
         }
 
         body { font-family: 'Segoe UI', sans-serif; margin: 0; display: flex; height: 100vh; overflow: hidden; background-color: var(--bg-color); color: var(--text-color); }
         
         #sidebar { width: 340px; background: var(--sidebar-bg); border-right: 1px solid var(--border-color); display: flex; flex-direction: column; box-shadow: 2px 0 5px rgba(0,0,0,0.2); z-index: 1000; height: 100vh; }
 
-        /* FIXED HEADER */
-        .logo-container { 
-            flex-shrink: 0; padding: 20px; display: flex; justify-content: center; align-items: center;
-            background: transparent; border-bottom: 2px solid var(--border-color); z-index: 1001;
-            cursor: pointer; transition: background 0.2s;
+        .logo-container { flex-shrink: 0; padding: 20px; display: flex; justify-content: center; align-items: center; background: transparent; border-bottom: 2px solid var(--border-color); cursor: pointer; }
+        
+        /* Default Logo Style */
+        .logo-container img { 
+            max-width: 160px; height: auto; display: block; 
+            /* We remove 'multiply' here too just to be safe, assuming you have a PNG */
+            mix-blend-mode: normal; 
         }
-        .logo-container:hover { background-color: var(--hover-bg); }
-        .logo-container img { max-width: 150px; height: auto; display: block; mix-blend-mode: multiply; }
 
         .scrollable-content { flex-grow: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 15px; }
 
         h3 { margin: 5px 0 5px 0; font-size: 12px; color: var(--text-color); opacity: 0.7; text-transform: uppercase; letter-spacing: 1px; font-weight: bold; border-bottom: 1px solid var(--border-color); padding-bottom: 4px;}
         
-        .search-toggles { display: flex; gap: 15px; margin-bottom: 5px; }
-        .search-toggles label { font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 5px; }
-        .input-group { display: flex; flex-direction: column; gap: 8px; position: relative; }
+        /* Search */
+        .search-container { display: flex; gap: 5px; align-items: stretch; }
+        .input-group { flex-grow: 1; display: flex; flex-direction: column; gap: 8px; position: relative; }
         input[type="text"], input[type="number"], select { padding: 10px; border: 1px solid var(--input-border); background: var(--input-bg); color: var(--text-color); border-radius: 4px; font-size: 14px; width: 100%; box-sizing: border-box; }
         
+        /* AutoComplete */
         #suggestions { position: absolute; top: 100%; left: 0; right: 0; background: var(--sidebar-bg); border: 1px solid var(--border-color); border-top: none; border-radius: 0 0 4px 4px; z-index: 2000; max-height: 200px; overflow-y: auto; display: none; box-shadow: 0 4px 6px rgba(0,0,0,0.2); }
         .suggestion-item { padding: 10px; cursor: pointer; font-size: 13px; border-bottom: 1px solid var(--border-color); }
         .suggestion-item:hover { background-color: var(--hover-bg); }
         
         .coord-row { display: flex; gap: 5px; }
-        
-        /* BUTTON STYLES */
-        .action-btn { background: var(--highlight); color: white; border: none; padding: 10px; border-radius: 4px; cursor: pointer; font-weight: bold; width: 100%; transition: 0.2s; font-size: 14px; }
-        .action-btn:hover { filter: brightness(1.1); }
-        
-        .reset-btn { background: #7f8c8d; margin-top: 5px; } /* Grey for reset */
-        .zoom-btn { background: #95a5a6; margin-top: 5px; font-size: 12px; padding: 8px; } 
+        .search-toggles { display: flex; gap: 15px; margin-bottom: 5px; }
+        .search-toggles label { font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 5px; }
+
+        /* Buttons & Icons */
+        .icon-btn { display: flex; justify-content: center; align-items: center; border: none; border-radius: 4px; cursor: pointer; transition: 0.2s; background: var(--highlight); }
+        .icon-btn:hover { filter: brightness(1.2); }
+        .btn-search { width: 42px; flex-shrink: 0; padding: 0; }
+        .btn-reset { background: #7f8c8d; width: 100%; padding: 8px; margin-top: 5px; display: flex; gap: 8px; color: white; font-weight: bold; font-size: 13px; }
+        .btn-target { background: #95a5a6; width: 100%; margin-top: 5px; padding: 10px;}
+        .btn-icon-img { width: 20px; height: 20px; filter: brightness(0) invert(1); }
 
         .layer-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
         .layer-option { display: flex; align-items: center; gap: 8px; font-size: 13px; cursor: pointer; background: var(--input-bg); padding: 8px; border-radius: 4px; border: 1px solid var(--border-color); }
         .layer-option:hover { background: var(--hover-bg); }
         input[type="checkbox"] { transform: scale(1.1); cursor: pointer; accent-color: var(--highlight); }
-        
         .basemap-box { margin-top: 0px; padding: 10px; background: var(--hover-bg); border-radius: 4px; border: 1px solid var(--border-color); }
 
+        /* Main Download Button */
         button#downloadBtn { padding: 12px; background-color: var(--success); color: white; border: none; font-weight: bold; cursor: pointer; border-radius: 5px; margin-top: 10px; font-size: 16px; transition: background 0.2s; width: 100%; }
         button#downloadBtn.cancel-mode { background-color: #e74c3c !important; }
         
@@ -77,18 +85,21 @@
         #message { font-size: 13px; font-weight: bold; color: var(--text-color); min-height: 20px; padding: 10px; background: var(--message-bg); border-radius: 5px; border-left: 5px solid var(--message-border);}
         .hidden { display: none !important; }
 
-        #loaderOverlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.7); z-index: 9999; display: none; flex-direction: column; justify-content: center; align-items: center; }
-        .spinner { border: 8px solid #f3f3f3; border-top: 8px solid var(--highlight); border-radius: 50%; width: 60px; height: 60px; animation: spin 1s linear infinite; }
+        /* GLOBAL LOADER (Fixed to Body) */
+        #globalLoader {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(0, 0, 0, 0.85); z-index: 99999; display: none;
+            flex-direction: column; justify-content: center; align-items: center;
+            backdrop-filter: blur(4px);
+        }
+        .spinner { border: 8px solid #f3f3f3; border-top: 8px solid var(--highlight); border-radius: 50%; width: 60px; height: 60px; animation: spin 1s linear infinite; margin-bottom: 20px; }
+        .loading-text { font-size: 20px; font-weight: bold; color: white; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        .loading-text { margin-top: 15px; font-size: 18px; font-weight: bold; color: white; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
 
-        /* --- MOBILE --- */
         @media (max-width: 768px) {
             body { flex-direction: column-reverse; } 
             #sidebar { width: 100%; height: 55%; border-right: none; border-top: 2px solid var(--highlight); }
             #map { height: 45%; } 
-            .logo-container { padding: 10px; }
-            .logo-container img { max-width: 80px; }
             .scrollable-content { padding: 15px; padding-bottom: 80px; } 
         }
     </style>
@@ -96,37 +107,42 @@
 <body>
 
 <div id="sidebar">
-    <div class="logo-container" onclick="window.location.reload()" title="Reload App">
-        <img src="logo.png?v=3" alt="Logo" onerror="this.style.display='none'"> 
+    <div class="logo-container" onclick="window.location.reload()" title="Reload MapForge">
+        <img src="logo.png" alt="MapForge Logo" onerror="this.style.display='none'"> 
     </div>
     
     <div class="scrollable-content">
         <h3>1. Navigate</h3>
         <div class="search-toggles">
             <label><input type="radio" name="searchMode" value="place" checked onchange="toggleSearchMode()"> Name</label>
-            <label><input type="radio" name="searchMode" value="coords" onchange="toggleSearchMode()"> Coords</label>
+            <label><input type="radio" name="searchMode" value="coords" onchange="toggleSearchMode()"> Coordinates</label>
         </div>
 
-        <div id="placeSearchDiv" class="input-group">
-            <input type="text" id="cityInput" placeholder="Enter City (e.g. Tokyo)..." autocomplete="off">
-            <div id="suggestions"></div>
-        </div>
-
-        <div id="coordSearchDiv" class="input-group hidden">
-            <div class="coord-row">
-                <input type="number" id="latInput" placeholder="Lat" step="any">
-                <input type="number" id="lonInput" placeholder="Lon" step="any">
+        <div class="search-container">
+            <div id="placeSearchDiv" class="input-group">
+                <input type="text" id="cityInput" placeholder="Enter City (e.g. Tokyo)..." autocomplete="off">
+                <div id="suggestions"></div>
             </div>
+            <div id="coordSearchDiv" class="input-group hidden" style="flex-grow:1;">
+                <div class="coord-row">
+                    <input type="number" id="latInput" placeholder="Lat" step="any">
+                    <input type="number" id="lonInput" placeholder="Lon" step="any">
+                </div>
+            </div>
+            <button class="icon-btn btn-search" onclick="executeSearch()" title="Search">
+                <img src="search.png" class="btn-icon-img" alt="Search">
+            </button>
         </div>
 
-        <button class="action-btn" onclick="executeSearch()">Fly to Location</button>
-        
-        <button class="action-btn reset-btn" onclick="zoomToFullExtent()" title="Reset view to start">Full Extent</button>
+        <button class="icon-btn btn-reset" onclick="zoomToFullExtent()" title="Reset to Global View">
+            <img src="globe.png" class="btn-icon-img" alt="Global"> Global View
+        </button>
 
         <h3>2. Draw Area</h3>
         <div id="message">Use toolbar (on Map) to draw.</div>
-        
-        <button class="action-btn zoom-btn" onclick="zoomToSelection()" title="Fit map to your drawn shape">Center on Selection</button>
+        <button class="icon-btn btn-target" onclick="zoomToSelection()" title="Center on Selection">
+            <img src="target.png" class="btn-icon-img" alt="Target">
+        </button>
 
         <h3>3. Layers</h3>
         <div class="layer-grid">
@@ -142,8 +158,7 @@
 
         <div class="basemap-box">
             <label style="font-weight: bold; font-size: 13px; display: flex; align-items: center; gap: 8px; cursor: pointer;">
-                <input type="checkbox" id="basemapCheck" value="true"> 
-                Include Background Map 🌍
+                <input type="checkbox" id="basemapCheck" value="true"> Include Basemap
             </label>
             <select id="basemapStyle" style="margin-top: 8px; font-size: 12px; padding: 5px; width: 100%;">
                 <option value="osm">Standard (Street)</option>
@@ -167,35 +182,31 @@
             </optgroup>
         </select>
 
-        <button id="downloadBtn" onclick="downloadData()">Download Selected</button>
+        <button id="downloadBtn" onclick="handleDownloadClick()">Download</button>
     </div>
 </div>
 
-<div id="map">
-    <div id="loaderOverlay">
-        <div class="spinner"></div>
-        <div class="loading-text">Generating Data...</div>
-    </div>
+<div id="map"></div>
+
+<div id="globalLoader">
+    <div class="spinner"></div>
+    <div class="loading-text">Generating Data...</div>
+    <button onclick="cancelDownload()" style="margin-top:20px; padding:10px 20px; background:#e74c3c; color:white; border:none; border-radius:4px; font-weight:bold; cursor:pointer;">Cancel</button>
 </div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js"></script>
 
 <script>
-    // MAP SETUP
-    // Defined start coords to reuse later
     const START_LAT = 20.5937;
     const START_LON = 78.9629;
     const START_ZOOM = 5;
-
     var osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap' });
     var satellite = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', { attribution: 'Tiles © Esri' });
     var dark = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', { attribution: '© OpenStreetMap & CartoDB' });
-
     var map = L.map('map', { center: [START_LAT, START_LON], zoom: START_ZOOM, layers: [osm] });
     L.control.layers({ "Standard": osm, "Satellite": satellite, "Dark Mode": dark }).addTo(map);
 
-    // DRAWING CONTROLS
     var drawnItems = new L.FeatureGroup();
     map.addLayer(drawnItems);
     var drawControl = new L.Control.Draw({
@@ -208,75 +219,11 @@
     });
     map.addControl(drawControl);
 
+    let selData = null;
+    let selType = null;
     let currentLocationName = "Custom_Area"; 
-
-    // SEARCH & AUTOCOMPLETE
-    const cityInput = document.getElementById('cityInput');
-    const suggestionsBox = document.getElementById('suggestions');
-    let debounceTimer;
-
-    cityInput.addEventListener('input', function() {
-        clearTimeout(debounceTimer);
-        const query = this.value;
-        if (query.length < 3) { suggestionsBox.style.display = 'none'; return; }
-        debounceTimer = setTimeout(() => fetchSuggestions(query), 300);
-    });
-
-    async function fetchSuggestions(query) {
-        try {
-            const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=5`);
-            const data = await res.json();
-            suggestionsBox.innerHTML = '';
-            if (data.length === 0) { suggestionsBox.style.display = 'none'; return; }
-            data.forEach(place => {
-                const div = document.createElement('div');
-                div.className = 'suggestion-item';
-                div.innerText = place.display_name;
-                div.onclick = () => {
-                    cityInput.value = place.display_name;
-                    currentLocationName = place.display_name.split(',')[0].trim().replace(/\s+/g, '_');
-                    suggestionsBox.style.display = 'none';
-                    map.flyTo([place.lat, place.lon], 14);
-                };
-                suggestionsBox.appendChild(div);
-            });
-            suggestionsBox.style.display = 'block';
-        } catch (e) {}
-    }
-
-    document.addEventListener('click', function(e) {
-        if (e.target !== cityInput && e.target !== suggestionsBox) suggestionsBox.style.display = 'none';
-    });
-
-    function toggleSearchMode() {
-        const mode = document.querySelector('input[name="searchMode"]:checked').value;
-        document.getElementById('placeSearchDiv').classList.toggle('hidden', mode !== 'place');
-        document.getElementById('coordSearchDiv').classList.toggle('hidden', mode !== 'coords');
-    }
-
-    async function executeSearch() {
-        const mode = document.querySelector('input[name="searchMode"]:checked').value;
-        if (mode === 'place') {
-            const query = cityInput.value;
-            if (!query) return;
-            currentLocationName = query.split(',')[0].trim().replace(/\s+/g, '_');
-            const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=1`);
-            const data = await res.json();
-            if (data.length > 0) map.flyTo([data[0].lat, data[0].lon], 13);
-            else alert("Location not found");
-        } else {
-            const lat = parseFloat(document.getElementById('latInput').value);
-            const lon = parseFloat(document.getElementById('lonInput').value);
-            if (!isNaN(lat) && !isNaN(lon)) {
-                currentLocationName = `${lat}_${lon}`;
-                map.flyTo([lat, lon], 15);
-            }
-        }
-    }
-
-    // SELECTION TRACKING
-    var selData = null;
-    var selType = null;
+    let globalAbortController = null; 
+    let searchMarker = null;
 
     map.on(L.Draw.Event.CREATED, function (e) {
         drawnItems.clearLayers();
@@ -300,100 +247,149 @@
 
     map.on(L.Draw.Event.DELETED, function () { selData = null; document.getElementById('message').innerText = "Use toolbar to select area"; });
 
-    // NEW FUNCTION: ZOOM TO SELECTION
-    function zoomToSelection() {
-        if (drawnItems.getLayers().length > 0) {
-            map.fitBounds(drawnItems.getBounds());
-        } else {
-            alert("Please draw a shape first!");
-        }
+    function handleDownloadClick() {
+        if (globalAbortController) { cancelDownload(); } else { startDownload(); }
     }
 
-    // NEW FUNCTION: ZOOM TO FULL EXTENT
-    function zoomToFullExtent() {
-        map.setView([START_LAT, START_LON], START_ZOOM);
+    function cancelDownload() {
+        if (globalAbortController) { globalAbortController.abort(); globalAbortController = null; }
+        resetUI(false); 
     }
 
-    function getFormattedDate() {
-        const d = new Date();
-        return `${String(d.getDate()).padStart(2,'0')}${String(d.getMonth()+1).padStart(2,'0')}${d.getFullYear()}`;
-    }
-
-    // DOWNLOAD & ABORT LOGIC
-    let abortController = null;
-
-    async function downloadData() {
+    function resetUI(isSuccess) {
+        document.getElementById('globalLoader').style.display = 'none';
         const btn = document.getElementById('downloadBtn');
         const msg = document.getElementById('message');
-        const loader = document.getElementById('loaderOverlay');
+        btn.innerText = "Download";
+        btn.classList.remove('cancel-mode');
+        if (!isSuccess) msg.innerText = "Download Cancelled.";
+    }
+
+    async function startDownload() {
+        const btn = document.getElementById('downloadBtn');
+        const msg = document.getElementById('message');
         const basemap = document.getElementById('basemapCheck').checked;
-        const basemapStyle = document.getElementById('basemapStyle').value; 
         const fmt = document.getElementById('format').value;
         const checkboxes = document.querySelectorAll('.layer-grid input:checked');
 
-        if (abortController) {
-            abortController.abort();
-            abortController = null;
-            btn.innerText = "Download Selected";
-            btn.classList.remove('cancel-mode');
-            loader.style.display = 'none';
-            msg.innerText = "🚫 Download Cancelled.";
-            return;
-        }
-
         if (!selData) { alert("Please draw an area on the map first!"); return; }
         if (checkboxes.length === 0 && !basemap) { alert("Select at least one Layer OR the Background Map."); return; }
-        if (basemap && !['png','svg','pdf'].includes(fmt)) { alert("Background Map only works with PNG, SVG, or PDF formats."); return; }
-
-        const layers = Array.from(checkboxes).map(cb => cb.value).join(',');
-
-        abortController = new AbortController();
-        const signal = abortController.signal;
-        btn.innerText = "Cancel Processing ❌";
+        
+        document.getElementById('globalLoader').style.display = 'flex';
+        btn.innerText = "Cancelling";
         btn.classList.add('cancel-mode');
-        msg.innerText = "Processing... (This may take a moment)";
-        loader.style.display = 'flex';
-
+        msg.innerText = "Processing...";
+        
+        globalAbortController = new AbortController();
+        const signal = globalAbortController.signal;
+        const layers = Array.from(checkboxes).map(cb => cb.value).join(',');
+        
         try {
-            let params = new URLSearchParams({ 
-                layers: layers, 
-                type: selType, 
-                fmt: fmt, 
-                basemap: basemap,
-                basemap_style: basemapStyle 
-            });
-            
-            if (selType === 'bbox') {
-                params.append('north', selData.north); params.append('south', selData.south);
-                params.append('east', selData.east); params.append('west', selData.west);
-            } else if (selType === 'circle') {
-                params.append('lat', selData.lat); params.append('lon', selData.lon);
-                params.append('radius', selData.radius);
-            } else if (selType === 'polygon') {
-                params.append('poly_coords', selData.poly_coords);
-            }
+            let params = new URLSearchParams({ layers: layers, type: selType, fmt: fmt, basemap: basemap, basemap_style: document.getElementById('basemapStyle').value });
+            if (selType === 'bbox') { params.append('north', selData.north); params.append('south', selData.south); params.append('east', selData.east); params.append('west', selData.west); }
+            else if (selType === 'circle') { params.append('lat', selData.lat); params.append('lon', selData.lon); params.append('radius', selData.radius); }
+            else if (selType === 'polygon') { params.append('poly_coords', selData.poly_coords); }
 
             const res = await fetch(`/download?${params.toString()}`, { signal: signal });
-            if (!res.ok) throw new Error((await res.json()).detail || "Error");
             
+            const contentType = res.headers.get("content-type");
+            if (contentType && contentType.includes("application/json")) {
+                 const errorData = await res.json();
+                 throw new Error(errorData.detail || "Server Error");
+            }
+            if (!res.ok) throw new Error(`Server Error: ${res.statusText}`);
+
             const blob = await res.blob();
             const link = document.createElement('a');
             link.href = window.URL.createObjectURL(blob);
             const ext = (fmt === 'shp' || ['geojson', 'gpkg'].includes(fmt)) ? 'zip' : fmt;
-            link.download = `${currentLocationName}_${getFormattedDate()}.${ext}`;
+            const d = new Date();
+            const dateStr = `${String(d.getDate()).padStart(2,'0')}${String(d.getMonth()+1).padStart(2,'0')}`;
+            link.download = `${currentLocationName}_${dateStr}.${ext}`;
             link.click();
             msg.innerText = "Download Complete!";
+            resetUI(true);
+            globalAbortController = null;
 
         } catch (e) {
-            if (e.name === 'AbortError') msg.innerText = "🚫 Download Cancelled.";
-            else msg.innerText = "❌ " + e.message;
-        } finally {
-            abortController = null;
-            btn.innerText = "Download Selected";
-            btn.classList.remove('cancel-mode');
-            loader.style.display = 'none';
+            if (e.name !== 'AbortError') msg.innerText = "❌ " + e.message;
+            if (globalAbortController && globalAbortController.signal === signal) resetUI(false);
         }
     }
+
+    // --- SEARCH PIN LOGIC ---
+    function dropPin(lat, lon, label) {
+        if (searchMarker) map.removeLayer(searchMarker);
+        searchMarker = L.marker([lat, lon]).addTo(map);
+        
+        // --- FIX: Create popup but DO NOT open it immediately ---
+        searchMarker.bindPopup(`<b>${label}</b>`); 
+        
+        // Just fly there
+        map.flyTo([lat, lon], 14);
+    }
+
+    const cityInput = document.getElementById('cityInput');
+    const suggestionsBox = document.getElementById('suggestions');
+    let debounceTimer;
+
+    cityInput.addEventListener('input', function() {
+        clearTimeout(debounceTimer);
+        const query = this.value;
+        if (query.length < 3) { suggestionsBox.style.display = 'none'; return; }
+        debounceTimer = setTimeout(async () => {
+            try {
+                const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=5`);
+                const data = await res.json();
+                suggestionsBox.innerHTML = '';
+                if (data.length === 0) { suggestionsBox.style.display = 'none'; return; }
+                data.forEach(place => {
+                    const div = document.createElement('div');
+                    div.className = 'suggestion-item';
+                    div.innerText = place.display_name;
+                    div.onclick = () => {
+                        cityInput.value = place.display_name;
+                        currentLocationName = place.display_name.split(',')[0].trim().replace(/\s+/g, '_');
+                        suggestionsBox.style.display = 'none';
+                        dropPin(place.lat, place.lon, place.display_name);
+                    };
+                    suggestionsBox.appendChild(div);
+                });
+                suggestionsBox.style.display = 'block';
+            } catch (e) {}
+        }, 300);
+    });
+
+    document.addEventListener('click', function(e) { if (e.target !== cityInput) suggestionsBox.style.display = 'none'; });
+
+    function toggleSearchMode() { 
+        const mode = document.querySelector('input[name="searchMode"]:checked').value;
+        document.getElementById('placeSearchDiv').classList.toggle('hidden', mode !== 'place');
+        document.getElementById('coordSearchDiv').classList.toggle('hidden', mode !== 'coords');
+    }
+
+    async function executeSearch() {
+        const mode = document.querySelector('input[name="searchMode"]:checked').value;
+        let lat, lon, name;
+        if (mode === 'place') {
+            const query = cityInput.value;
+            if (!query) return;
+            const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=1`);
+            const data = await res.json();
+            if (data.length > 0) { lat = data[0].lat; lon = data[0].lon; name = data[0].display_name; currentLocationName = name.split(',')[0].trim().replace(/\s+/g, '_'); }
+            else { alert("Location not found"); return; }
+        } else {
+            lat = parseFloat(document.getElementById('latInput').value);
+            lon = parseFloat(document.getElementById('lonInput').value);
+            if (isNaN(lat) || isNaN(lon)) return;
+            name = "Coordinate Location";
+            currentLocationName = `${lat}_${lon}`;
+        }
+        dropPin(lat, lon, name);
+    }
+
+    function zoomToSelection() { if (drawnItems.getLayers().length > 0) map.fitBounds(drawnItems.getBounds()); else alert("Please draw a shape first!"); }
+    function zoomToFullExtent() { map.setView([START_LAT, START_LON], START_ZOOM); }
 </script>
 </body>
 </html>
