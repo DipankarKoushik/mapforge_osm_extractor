@@ -1,153 +1,74 @@
-MapForge (Geospatial Extraction Engine)
+# MapForge
 
+**A modern geospatial extraction engine.**
+Extract, visualize, and export high-precision urban data from OpenStreetMap (OSM) for any location on Earth.
 
+![Status](https://img.shields.io/badge/Status-Live-success)
+![Python](https://img.shields.io/badge/Python-3.10+-blue)
+![FastAPI](https://img.shields.io/badge/Backend-FastAPI-009688)
+![Leaflet](https://img.shields.io/badge/Frontend-Leaflet.js-green)
 
-A professional full-stack web application to extract, visualize, and export high-precision urban data from OpenStreetMap (OSM) for any location on Earth.
+## 🚀 Key Features
 
+### 🎨 Modern UI/UX
+* **Smart Dark Mode:** Automatically detects system theme. The MapForge logo adapts visibility (White on Dark / Dark on Light) without color distortion.
+* **Global Loader:** A full-screen, reliable loading overlay that prevents interaction crashes during heavy data processing.
+* **Mobile Optimized:** Fully responsive layout with bottom-sheet controls for phones.
 
+### 🗺️ Advanced Navigation
+* **Search & Pin:** Locate any city or coordinate. Drops a **Red Marker Pin** silently (click to see name) and flies to the location.
+* **Global View:** One-click reset to the world view.
+* **Selection Zoom:** Instantly center the camera on your drawn shape.
 
-[Status](https://img.shields.io/badge/Status-Production-success)
+### 🛠️ Powerful Tools
+* **Drawing Tools:** Rectangle (BBox), Circle, and Polygon selection.
+* **Basemaps:** Standard OSM, Esri Satellite, and CartoDB Dark Matter.
+* **Smart Clipping:** Auto-clips satellite imagery to circular selections for design use.
 
-[Python](https://img.shields.io/badge/Python-3.10+-blue)
+### 📥 Export Formats
+* **Vectors (GIS):** Shapefile (.shp), GeoPackage (.gpkg), GeoJSON.
+* **Design (Raster):** High-Res PNG, SVG (for Illustrator), PDF.
+* **Robust Error Handling:** Automatically detects server timeouts or memory crashes and reports clear errors instead of silent failures.
 
-[FastAPI](https://img.shields.io/badge/Backend-FastAPI-009688)
+---
 
-[Leaflet](https://img.shields.io/badge/Frontend-Leaflet.js-orange)
+## 📂 Project Structure
 
+```text
+/mapforge
+├── main.py            # Backend logic (FastAPI)
+├── index.html         # Frontend UI (Leaflet.js)
+├── favicon.ico        # Browser Tab Icon
+├── logo.png           # Project Logo
+├── search.png         # Icon: Search Button
+├── globe.png          # Icon: Global View Button
+├── target.png         # Icon: Center Selection Button
+├── requirements.txt   # Python Dependencies
+└── temp/              # Temporary storage for generated maps (Auto-created)
 
+🛠️ Installation & Setup
 
+Clone the Repository:
 
+Bash
 
+git clone [https://github.com/DipankarKoushik/mapforge_osm_extractor.git](https://github.com/DipankarKoushik/mapforge_osm_extractor.git)
+cd mapforge
 
+Install Dependencies:
 
-🚀 Try here
-
-[Click here to view the Live App](https://osmextractor-mapforge.onrender.com/)
-
-
-
-
-
-
-
-Key Features \& Recent Updates
-
-* Modern UI/UX
-* Auto-Dark Mode
-* Mobile Responsive
-
-
-
-Advanced Mapping Tools
-
-* Dual Search Engine: Search by City Name or precise Coordinates.
-* Basemaps: Switch between Standard Street, Satellite (Esri World Imagery), and Dark Mode (CartoDB).
-
-
-
-Select your area of interest using:
-
-🟦 Rectangle (Bounding Box)
-
-⚪ Circle (Radius Select)
-
-✍️ Freehand Polygon
-
-
-
-Data Export \\\& Visualization
-
-* Download specific urban layers: Buildings, Streets, Water, Parks, Schools, Medical, Railways, Power Lines.
-* GIS Vector Support: Export data as Shapefile (.shp), GeoPackage (.gpkg), or GeoJSON for professional GIS software (QGIS/ArcGIS).
-* Graphic Design Export: Get high-resolution SVG, PDF, or PNG maps.
-
-
-
-Smart Clipping (Advanced)
-
-* Circular Cutouts: When exporting a circular selection as an image (PNG/SVG), the engine applies a mathematical clipping mask, removing the square corners and creating a transparent background perfect for design layouts.
-
-
-
-Tech Stack:
-
-Backend
-
-* Python 3.10+
-* FastAPI: High-performance API framework.
-* OSMnx: For retrieving and constructing street networks.
-* GeoPandas \& Shapely: For geometric manipulation and coordinate projection (EPSG:4326 ↔ EPSG:3857).
-* Contextily: For fetching and stitching satellite map tiles.
-* Matplotlib: For generating static map images and applying clipping masks.
-
-
-
-Frontend
-
-* HTML5 / CSS3: Custom responsive layout with CSS Variables for theming.
-* Leaflet.js: Interactive map interface.
-* Leaflet-Draw: Vector drawing tools.
-
-
-
-Local Installation Guide
-
-1\. Clone the Repository
-
-
-
-git clone https://github.com/DipankarKoushik/mapforge\_osm\_extractor.git
-
-
-
-cd mapforge\_osm\_extractor
-
-
-
-2\. Create Virtual Environment
-
-* Windows
-
-python -m venv venv
-
-.\\venv\\Scripts\\activate
-
-
-
-* Mac/Linux
-
-python3 -m venv venv
-
-source venv/bin/activate
-
-
-
-3\. Install Dependencies
-
-
+Bash
 
 pip install -r requirements.txt
 
+Run the Server:
 
-
-4\. Run the Server
-
-
+Bash
 
 uvicorn main:app --reload
 
+Open in Browser: Go to http://127.0.0.1:8000
 
 
-5\. Access the App
-
-
-
-Open your browser and go to: http://127.0.0.1:8000
-
-
-
-License \& Credits
-
-* Map Data © OpenStreetMap contributors.
-* Satellite Imagery © Esri.
-* Built using OSMnx by Geoff Boeing.
+📝 License
+This project uses data from OpenStreetMap (ODbL) and Esri World Imagery.
